@@ -1,0 +1,37 @@
+const express = require('express');
+const tourController = require('./../controllers/tourController');
+const authController = require('./../controllers/authController');
+const reviewController = require('./../controllers/reviewController');
+const reviewRouter = require('./reviewRoutes');
+
+const router = express.Router();
+
+router.use('/:tourId/reviews', reviewRouter);
+
+//router.param('id', tourController.checkId);
+router.route('/topTours').get(tourController.setQuery, tourController.getAllTours);
+
+
+router
+  .route('/')
+  .get(tourController.getAllTours)
+//  .post(tourController.checkBody, tourController.addATour)
+  .post(authController.protect, authController.restrict('admin','lead-guide'),tourController.addATour)
+
+router
+  .route('/:id')
+  .get(tourController.getATour)
+  .delete(authController.protect, authController.restrict('admin','lead-guide'), tourController.deleteATour)
+  .patch(authController.protect, authController.restrict('admin','lead-guide'),tourController.updateATour)
+
+//POST request to /:tourId/reviews
+//GET request to /:tourId/reviews
+//GET request to /:tourId/reviews/:reviewId
+
+// router
+//     .route('/:tourId/reviews')
+//     .post(authController.protect,
+//       authController.restrict('user'),
+//       reviewController.addReview);
+
+module.exports = router;
